@@ -1,0 +1,230 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Pillar 1: Global Default-Deny Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Primitive Helpers
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerifiedUser() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // Entity Validation Blueprints (Pillar 2: Anti-Update-Gap)
+    function isValidPolicyConfig(data) {
+      return data.keys().hasAll([
+        'ownerId', 'protectionModel', 'partnerName', 'partnerEmail',
+        'unlockPin', 'cooldownMinutes', 'blockAdultCore', 'blockProxyVpn',
+        'enforceSafeSearch', 'blockMixedSocial', 'blockGambling',
+        'lockHostsFile', 'lockDnsSettings', 'forceBrowserExtension',
+        'uninstallProtection', 'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'ownerId', 'protectionModel', 'partnerName', 'partnerEmail',
+        'unlockPin', 'cooldownMinutes', 'blockAdultCore', 'blockProxyVpn',
+        'enforceSafeSearch', 'blockMixedSocial', 'blockGambling',
+        'lockHostsFile', 'lockDnsSettings', 'forceBrowserExtension',
+        'uninstallProtection', 'updatedAt'
+      ]) &&
+      data.ownerId == request.auth.uid &&
+      isValidId(data.ownerId) &&
+      (data.protectionModel == 'model-a' || data.protectionModel == 'model-b') &&
+      data.partnerName is string && data.partnerName.size() >= 1 && data.partnerName.size() <= 80 &&
+      data.partnerEmail is string && data.partnerEmail.size() >= 3 && data.partnerEmail.size() <= 120 &&
+      data.unlockPin is string && data.unlockPin.size() >= 4 && data.unlockPin.size() <= 16 &&
+      data.unlockPin.matches('^[0-9A-Za-z\\-]+$') &&
+      data.cooldownMinutes is int && data.cooldownMinutes >= 0 && data.cooldownMinutes <= 10080 &&
+      data.blockAdultCore is bool &&
+      data.blockProxyVpn is bool &&
+      data.enforceSafeSearch is bool &&
+      data.blockMixedSocial is bool &&
+      data.blockGambling is bool &&
+      data.lockHostsFile is bool &&
+      data.lockDnsSettings is bool &&
+      data.forceBrowserExtension is bool &&
+      data.uninstallProtection is bool &&
+      data.updatedAt is timestamp;
+    }
+
+    function isValidBlockRule(data) {
+      return data.keys().hasAll([
+        'ownerId', 'domain', 'category', 'strictLock', 'notes', 'hitCount', 'createdAt'
+      ]) &&
+      data.keys().hasOnly([
+        'ownerId', 'domain', 'category', 'strictLock', 'notes', 'hitCount', 'createdAt'
+      ]) &&
+      data.ownerId == request.auth.uid &&
+      isValidId(data.ownerId) &&
+      data.domain is string && data.domain.size() >= 3 && data.domain.size() <= 253 &&
+      data.domain.matches('^[a-z0-9.-]+\\.[a-z]{2,}$') &&
+      (data.category == 'Adult' || data.category == 'Proxy/Bypass' || data.category == 'Social/Trigger' || data.category == 'Custom') &&
+      data.strictLock is bool &&
+      data.notes is string && data.notes.size() <= 200 &&
+      data.hitCount is int && data.hitCount >= 0 && data.hitCount <= 10000000 &&
+      data.createdAt is timestamp;
+    }
+
+    function isValidScheduleWindow(data) {
+      return data.keys().hasAll([
+        'ownerId', 'name', 'days', 'startTime', 'endTime', 'strictness', 'enabled', 'createdAt'
+      ]) &&
+      data.keys().hasOnly([
+        'ownerId', 'name', 'days', 'startTime', 'endTime', 'strictness', 'enabled', 'createdAt'
+      ]) &&
+      data.ownerId == request.auth.uid &&
+      isValidId(data.ownerId) &&
+      data.name is string && data.name.size() >= 2 && data.name.size() <= 80 &&
+      data.days is string && data.days.size() >= 3 && data.days.size() <= 40 &&
+      data.startTime is string && data.startTime.size() == 5 &&
+      data.startTime.matches('^([01][0-9]|2[0-3]):[0-5][0-9]$') &&
+      data.endTime is string && data.endTime.size() == 5 &&
+      data.endTime.matches('^([01][0-9]|2[0-3]):[0-5][0-9]$') &&
+      (data.strictness == 'Standard Filter' || data.strictness == 'Hard Commitment Lock') &&
+      data.enabled is bool &&
+      data.createdAt is timestamp;
+    }
+
+    function isValidProtectedDevice(data) {
+      return data.keys().hasAll([
+        'ownerId', 'name', 'platform', 'agentType', 'agentVersion',
+        'status', 'dnsLockActive', 'hostsLockActive', 'createdAt'
+      ]) &&
+      data.keys().hasOnly([
+        'ownerId', 'name', 'platform', 'agentType', 'agentVersion',
+        'status', 'dnsLockActive', 'hostsLockActive', 'createdAt'
+      ]) &&
+      data.ownerId == request.auth.uid &&
+      isValidId(data.ownerId) &&
+      data.name is string && data.name.size() >= 2 && data.name.size() <= 80 &&
+      (data.platform == 'Windows' || data.platform == 'Android' || data.platform == 'iOS') &&
+      data.agentType is string && data.agentType.size() >= 2 && data.agentType.size() <= 80 &&
+      data.agentVersion is string && data.agentVersion.size() >= 3 && data.agentVersion.size() <= 24 &&
+      (data.status == 'Protected' || data.status == 'Tamper Alert' || data.status == 'Sync Pending') &&
+      data.dnsLockActive is bool &&
+      data.hostsLockActive is bool &&
+      data.createdAt is timestamp;
+    }
+
+    function isValidAuditEvent(data) {
+      return data.keys().hasAll([
+        'ownerId', 'eventType', 'severity', 'target', 'deviceName', 'actionTaken', 'createdAt'
+      ]) &&
+      data.keys().hasOnly([
+        'ownerId', 'eventType', 'severity', 'target', 'deviceName', 'actionTaken', 'createdAt'
+      ]) &&
+      data.ownerId == request.auth.uid &&
+      isValidId(data.ownerId) &&
+      (data.eventType == 'Blocked Request' || data.eventType == 'Tamper Attempt' || data.eventType == 'Policy Change' || data.eventType == 'Service Heartbeat') &&
+      (data.severity == 'Normal' || data.severity == 'Warning' || data.severity == 'Critical') &&
+      data.target is string && data.target.size() >= 1 && data.target.size() <= 253 &&
+      data.deviceName is string && data.deviceName.size() >= 1 && data.deviceName.size() <= 80 &&
+      data.actionTaken is string && data.actionTaken.size() >= 2 && data.actionTaken.size() <= 160 &&
+      data.createdAt is timestamp;
+    }
+
+    // Connection validation probe path (read-only check for offline detection)
+    match /test/connection {
+      allow get: if true;
+      allow list, write: if false;
+    }
+
+    // 1. User Policy Configuration (/policies/{userId})
+    match /policies/{userId} {
+      allow get: if isVerifiedUser() && isValidId(userId) && userId == request.auth.uid;
+      allow list: if isVerifiedUser() && existing().ownerId == request.auth.uid;
+      allow create: if isVerifiedUser() && isValidId(userId) && userId == request.auth.uid &&
+        isValidPolicyConfig(incoming()) &&
+        incoming().updatedAt == request.time;
+      allow update: if isVerifiedUser() && isValidId(userId) && userId == request.auth.uid &&
+        isValidPolicyConfig(incoming()) &&
+        existing().ownerId == request.auth.uid &&
+        incoming().ownerId == existing().ownerId &&
+        incoming().updatedAt == request.time &&
+        incoming().diff(existing()).affectedKeys().hasOnly([
+          'protectionModel', 'partnerName', 'partnerEmail', 'unlockPin',
+          'cooldownMinutes', 'blockAdultCore', 'blockProxyVpn', 'enforceSafeSearch',
+          'blockMixedSocial', 'blockGambling', 'lockHostsFile', 'lockDnsSettings',
+          'forceBrowserExtension', 'uninstallProtection', 'updatedAt'
+        ]);
+      allow delete: if false;
+    }
+
+    // 2. Custom Website Blocklist Rules (/blockRules/{ruleId})
+    match /blockRules/{ruleId} {
+      allow get: if isVerifiedUser() && isValidId(ruleId) && existing().ownerId == request.auth.uid;
+      allow list: if isVerifiedUser() && existing().ownerId == request.auth.uid;
+      allow create: if isVerifiedUser() && isValidId(ruleId) &&
+        isValidBlockRule(incoming()) &&
+        incoming().createdAt == request.time;
+      allow update: if isVerifiedUser() && isValidId(ruleId) &&
+        isValidBlockRule(incoming()) &&
+        existing().ownerId == request.auth.uid &&
+        incoming().ownerId == existing().ownerId &&
+        incoming().createdAt == existing().createdAt && (
+          incoming().diff(existing()).affectedKeys().hasOnly(['strictLock', 'notes', 'hitCount', 'category'])
+        );
+      allow delete: if isVerifiedUser() && isValidId(ruleId) && existing().ownerId == request.auth.uid;
+    }
+
+    // 3. Scheduled Blocking Windows (/schedules/{scheduleId})
+    match /schedules/{scheduleId} {
+      allow get: if isVerifiedUser() && isValidId(scheduleId) && existing().ownerId == request.auth.uid;
+      allow list: if isVerifiedUser() && existing().ownerId == request.auth.uid;
+      allow create: if isVerifiedUser() && isValidId(scheduleId) &&
+        isValidScheduleWindow(incoming()) &&
+        incoming().createdAt == request.time;
+      allow update: if isVerifiedUser() && isValidId(scheduleId) &&
+        isValidScheduleWindow(incoming()) &&
+        existing().ownerId == request.auth.uid &&
+        incoming().ownerId == existing().ownerId &&
+        incoming().createdAt == existing().createdAt && (
+          incoming().diff(existing()).affectedKeys().hasOnly(['name', 'days', 'startTime', 'endTime', 'strictness', 'enabled'])
+        );
+      allow delete: if isVerifiedUser() && isValidId(scheduleId) && existing().ownerId == request.auth.uid;
+    }
+
+    // 4. Enrolled Cross-Platform Devices (/devices/{deviceId})
+    match /devices/{deviceId} {
+      allow get: if isVerifiedUser() && isValidId(deviceId) && existing().ownerId == request.auth.uid;
+      allow list: if isVerifiedUser() && existing().ownerId == request.auth.uid;
+      allow create: if isVerifiedUser() && isValidId(deviceId) &&
+        isValidProtectedDevice(incoming()) &&
+        incoming().createdAt == request.time;
+      allow update: if isVerifiedUser() && isValidId(deviceId) &&
+        isValidProtectedDevice(incoming()) &&
+        existing().ownerId == request.auth.uid &&
+        incoming().ownerId == existing().ownerId &&
+        incoming().createdAt == existing().createdAt && (
+          incoming().diff(existing()).affectedKeys().hasOnly(['name', 'agentVersion', 'status', 'dnsLockActive', 'hostsLockActive'])
+        );
+      allow delete: if isVerifiedUser() && isValidId(deviceId) && existing().ownerId == request.auth.uid;
+    }
+
+    // 5. Immutable Security & Tamper Audit Logs (/auditLogs/{logId})
+    match /auditLogs/{logId} {
+      allow get: if isVerifiedUser() && isValidId(logId) && existing().ownerId == request.auth.uid;
+      allow list: if isVerifiedUser() && existing().ownerId == request.auth.uid;
+      allow create: if isVerifiedUser() && isValidId(logId) &&
+        isValidAuditEvent(incoming()) &&
+        incoming().createdAt == request.time;
+      allow update, delete: if false;
+    }
+  }
+}

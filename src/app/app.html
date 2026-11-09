@@ -1,0 +1,1235 @@
+<div class="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
+  <!-- Strict 3-Zone Top Navigation Bar Contract -->
+  <header class="sticky top-0 z-30 flex items-center justify-between gap-8 px-6 py-4 border-b border-slate-800 bg-slate-950/95 backdrop-blur-xs">
+    <!-- Zone 1: Single text element wordmark -->
+    <a
+      href="#overview"
+      (click)="$event.preventDefault(); setTab('overview')"
+      class="text-lg font-bold tracking-tight text-slate-100 whitespace-nowrap shrink-0"
+    >
+      SafeGuard Pro
+    </a>
+
+    <!-- Zone 2: 5 concise single-line text navigation links -->
+    <nav aria-label="Primary Navigation" class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-400">
+      <button
+        type="button"
+        (click)="setTab('overview')"
+        class="py-1 transition-colors whitespace-nowrap shrink-0 border-b-2"
+        [class.text-slate-100]="activeTab() === 'overview'"
+        [class.border-sky-400]="activeTab() === 'overview'"
+        [class.border-transparent]="activeTab() !== 'overview'"
+        [class.hover:text-slate-200]="activeTab() !== 'overview'"
+      >
+        Overview
+      </button>
+      <button
+        type="button"
+        (click)="setTab('blocklists')"
+        class="py-1 transition-colors whitespace-nowrap shrink-0 border-b-2"
+        [class.text-slate-100]="activeTab() === 'blocklists'"
+        [class.border-sky-400]="activeTab() === 'blocklists'"
+        [class.border-transparent]="activeTab() !== 'blocklists'"
+        [class.hover:text-slate-200]="activeTab() !== 'blocklists'"
+      >
+        Blocklists
+      </button>
+      <button
+        type="button"
+        (click)="setTab('schedules')"
+        class="py-1 transition-colors whitespace-nowrap shrink-0 border-b-2"
+        [class.text-slate-100]="activeTab() === 'schedules'"
+        [class.border-sky-400]="activeTab() === 'schedules'"
+        [class.border-transparent]="activeTab() !== 'schedules'"
+        [class.hover:text-slate-200]="activeTab() !== 'schedules'"
+      >
+        Schedules
+      </button>
+      <button
+        type="button"
+        (click)="setTab('agents')"
+        class="py-1 transition-colors whitespace-nowrap shrink-0 border-b-2"
+        [class.text-slate-100]="activeTab() === 'agents'"
+        [class.border-sky-400]="activeTab() === 'agents'"
+        [class.border-transparent]="activeTab() !== 'agents'"
+        [class.hover:text-slate-200]="activeTab() !== 'agents'"
+      >
+        Native Agents
+      </button>
+      <button
+        type="button"
+        (click)="setTab('tamper')"
+        class="py-1 transition-colors whitespace-nowrap shrink-0 border-b-2"
+        [class.text-slate-100]="activeTab() === 'tamper'"
+        [class.border-sky-400]="activeTab() === 'tamper'"
+        [class.border-transparent]="activeTab() !== 'tamper'"
+        [class.hover:text-slate-200]="activeTab() !== 'tamper'"
+      >
+        Tamper &amp; Audit
+      </button>
+    </nav>
+
+    <!-- Zone 3: 1 primary action -->
+    <div class="flex items-center gap-3 shrink-0">
+      <button
+        type="button"
+        (click)="handlePrimaryHeaderAction()"
+        class="px-4 py-2 text-xs font-semibold text-slate-950 bg-sky-400 rounded-lg hover:bg-sky-300 transition-colors whitespace-nowrap shrink-0"
+      >
+        {{ safeguard.currentUser() ? 'Sign Out (' + (safeguard.currentUser()?.email || 'Synced') + ')' : 'Sync Policy with Google' }}
+      </button>
+    </div>
+  </header>
+
+  <!-- Mobile Navigation Bar -->
+  <nav
+    aria-label="Mobile Navigation"
+    class="md:hidden flex items-center gap-2 overflow-x-auto px-4 py-2.5 border-b border-slate-800 bg-slate-900/80 text-xs font-medium"
+  >
+    <button
+      type="button"
+      (click)="setTab('overview')"
+      class="px-3 py-1.5 rounded-md whitespace-nowrap shrink-0"
+      [class.bg-slate-800]="activeTab() === 'overview'"
+      [class.text-slate-100]="activeTab() === 'overview'"
+      [class.text-slate-400]="activeTab() !== 'overview'"
+    >
+      Overview
+    </button>
+    <button
+      type="button"
+      (click)="setTab('blocklists')"
+      class="px-3 py-1.5 rounded-md whitespace-nowrap shrink-0"
+      [class.bg-slate-800]="activeTab() === 'blocklists'"
+      [class.text-slate-100]="activeTab() === 'blocklists'"
+      [class.text-slate-400]="activeTab() !== 'blocklists'"
+    >
+      Blocklists
+    </button>
+    <button
+      type="button"
+      (click)="setTab('schedules')"
+      class="px-3 py-1.5 rounded-md whitespace-nowrap shrink-0"
+      [class.bg-slate-800]="activeTab() === 'schedules'"
+      [class.text-slate-100]="activeTab() === 'schedules'"
+      [class.text-slate-400]="activeTab() !== 'schedules'"
+    >
+      Schedules
+    </button>
+    <button
+      type="button"
+      (click)="setTab('agents')"
+      class="px-3 py-1.5 rounded-md whitespace-nowrap shrink-0"
+      [class.bg-slate-800]="activeTab() === 'agents'"
+      [class.text-slate-100]="activeTab() === 'agents'"
+      [class.text-slate-400]="activeTab() !== 'agents'"
+    >
+      Native Agents
+    </button>
+    <button
+      type="button"
+      (click)="setTab('tamper')"
+      class="px-3 py-1.5 rounded-md whitespace-nowrap shrink-0"
+      [class.bg-slate-800]="activeTab() === 'tamper'"
+      [class.text-slate-100]="activeTab() === 'tamper'"
+      [class.text-slate-400]="activeTab() !== 'tamper'"
+    >
+      Tamper &amp; Audit
+    </button>
+  </nav>
+
+  <!-- Main Content Container -->
+  <main class="flex-1 w-full max-w-7xl mx-auto px-6 py-8 space-y-10">
+    <!-- Contextual Protection Bar (Workspace Toolbar) -->
+    <section class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 pb-6 border-b border-slate-800">
+      <div class="space-y-1.5 max-w-2xl">
+        <div class="flex flex-wrap items-center gap-2 text-xs text-slate-400">
+          <span class="font-semibold text-emerald-400">System Filtering Enforced</span>
+          <span aria-hidden="true">·</span>
+          <span>{{ safeguard.policy().protectionModel === 'model-a' ? 'Model A: Self-Control + Trusted Partner Lock' : 'Model B: Administrator-Controlled MDM Lock' }}</span>
+          <span aria-hidden="true">·</span>
+          <span class="font-mono tabular-nums">{{ safeguard.activeDefenseLayerCount() }}/7 Hardened Defense Layers</span>
+        </div>
+        <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-100" style="text-wrap: balance;">
+          Tamper-Resistant Adult Content &amp; Habit Blocking Architecture
+        </h1>
+      </div>
+
+      <div class="flex items-center gap-3 shrink-0">
+        @if (safeguard.sessionAuthorized()) {
+          <button
+            type="button"
+            (click)="safeguard.lockSession()"
+            class="rounded-lg border border-amber-500/40 bg-amber-500/10 px-3.5 py-2 text-xs font-medium text-amber-300 hover:bg-amber-500/20 transition-colors whitespace-nowrap shrink-0"
+          >
+            Re-Lock Partner Authorization Session
+          </button>
+        } @else {
+          <button
+            type="button"
+            (click)="requestPinAuthorization('Enter your Trusted Partner or MDM Administrator PIN to temporarily unlock tamper-protected policy settings.')"
+            class="rounded-lg border border-slate-700 bg-slate-900 px-3.5 py-2 text-xs font-medium text-slate-200 hover:bg-slate-800 transition-colors whitespace-nowrap shrink-0"
+          >
+            Authorize Policy Edit (PIN Locked)
+          </button>
+        }
+        <button
+          type="button"
+          (click)="triggerUninstallGuardTest()"
+          class="rounded-lg border border-slate-800 bg-slate-900/60 px-3.5 py-2 text-xs font-medium text-slate-300 hover:bg-slate-800 transition-colors whitespace-nowrap shrink-0"
+        >
+          Test Uninstallation Guard
+        </button>
+      </div>
+    </section>
+
+    <!-- TAB 1: OVERVIEW -->
+    @if (activeTab() === 'overview') {
+      <div class="space-y-10">
+        <!-- 4-Column KPI Strip -->
+        <section aria-label="Protection Metrics" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-5">
+            <p class="text-xs text-slate-400">Blocked Attempts (24h)</p>
+            <p class="mt-2 text-2xl font-bold font-mono tabular-nums text-slate-100">
+              {{ safeguard.totalBlockedHits() }}
+            </p>
+            <p class="mt-1 text-xs text-slate-400">
+              Adult core + {{ safeguard.blockRules().length }} custom domain rules
+            </p>
+          </div>
+
+          <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-5">
+            <p class="text-xs text-slate-400">Enforced Domain Signatures</p>
+            <p class="mt-2 text-2xl font-bold font-mono tabular-nums text-slate-100">
+              {{ safeguard.policy().blockAdultCore ? '142,850+' : safeguard.blockRules().length }}
+            </p>
+            <p class="mt-1 text-xs text-slate-400">
+              DoH Resolver · Hosts ACL · SafeSearch VIP
+            </p>
+          </div>
+
+          <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-5">
+            <p class="text-xs text-slate-400">Protected Endpoints</p>
+            <p class="mt-2 text-2xl font-bold font-mono tabular-nums text-slate-100">
+              {{ safeguard.devices().length }} Active
+            </p>
+            <p class="mt-1 text-xs text-slate-400">
+              Windows Service · Android VPN · iOS NE
+            </p>
+          </div>
+
+          <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-5">
+            <p class="text-xs text-slate-400">Tamper &amp; Uninstall Lock</p>
+            <p
+              class="mt-2 text-2xl font-bold font-mono tabular-nums"
+              [class.text-emerald-400]="safeguard.isTamperLockActive()"
+              [class.text-amber-400]="!safeguard.isTamperLockActive()"
+            >
+              {{ safeguard.isTamperLockActive() ? 'Locked' : 'Unlocked' }}
+            </p>
+            <p class="mt-1 text-xs text-slate-400">
+              Cooldown: <span class="font-mono tabular-nums">{{ safeguard.policy().cooldownMinutes }}m</span> · Partner PIN
+            </p>
+          </div>
+        </section>
+
+        <!-- Two-Column Split: Live DNS/URL Filter Simulator + Protection Model Selector -->
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+          <!-- Left 7 Columns: Live DNS & System Filter Simulator -->
+          <div class="lg:col-span-7 rounded-xl border border-slate-800 bg-slate-900/60 p-6 flex flex-col justify-between space-y-6">
+            <div class="space-y-3">
+              <div class="flex items-center justify-between gap-4">
+                <p class="text-xs font-medium text-sky-400">
+                  Real-Time Multi-Layer Policy Verifier
+                </p>
+                <span class="text-xs font-mono text-slate-400 tabular-nums">
+                  Engine Latency: &lt;1ms local
+                </span>
+              </div>
+              <h2 class="text-lg font-semibold text-slate-100">
+                Test Any Website or Domain Against Active Filters
+              </h2>
+              <p class="text-xs text-slate-400 leading-relaxed">
+                Verify how SafeGuard Pro evaluates a domain across your centralized DNS resolver, Windows Hosts sinkhole, Android Kotlin VpnService, and active commitment schedules.
+              </p>
+
+              <form (ngSubmit)="runDomainSimulation()" class="pt-2 flex flex-col sm:flex-row gap-3">
+                <div class="flex-1">
+                  <label for="simulator-domain-input" class="sr-only">Domain or URL to test</label>
+                  <input
+                    id="simulator-domain-input"
+                    name="simulatorInput"
+                    type="text"
+                    [(ngModel)]="simulatorInput"
+                    placeholder="Enter URL or domain (e.g. pornhub.com, croxyproxy.com, google.com)"
+                    class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3.5 py-2.5 text-sm font-mono text-slate-100 placeholder-slate-500 focus:border-sky-500 focus:outline-none"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  class="rounded-lg bg-sky-500 px-5 py-2.5 text-xs font-semibold text-slate-950 hover:bg-sky-400 transition-colors whitespace-nowrap shrink-0"
+                >
+                  Evaluate Domain Access
+                </button>
+              </form>
+
+              <!-- Quick Preset Test Buttons -->
+              <div class="flex flex-wrap items-center gap-2 pt-1 text-xs">
+                <span class="text-slate-400">Quick Probes:</span>
+                <button
+                  type="button"
+                  (click)="runDomainSimulation('pornhub.com')"
+                  class="rounded-md border border-slate-800 bg-slate-950 px-2.5 py-1 font-mono text-slate-300 hover:border-slate-700 hover:text-white transition-colors whitespace-nowrap shrink-0"
+                >
+                  pornhub.com
+                </button>
+                <button
+                  type="button"
+                  (click)="runDomainSimulation('croxyproxy.com')"
+                  class="rounded-md border border-slate-800 bg-slate-950 px-2.5 py-1 font-mono text-slate-300 hover:border-slate-700 hover:text-white transition-colors whitespace-nowrap shrink-0"
+                >
+                  croxyproxy.com
+                </button>
+                <button
+                  type="button"
+                  (click)="runDomainSimulation('nsfw.reddit.com')"
+                  class="rounded-md border border-slate-800 bg-slate-950 px-2.5 py-1 font-mono text-slate-300 hover:border-slate-700 hover:text-white transition-colors whitespace-nowrap shrink-0"
+                >
+                  nsfw.reddit.com
+                </button>
+                <button
+                  type="button"
+                  (click)="runDomainSimulation('google.com')"
+                  class="rounded-md border border-slate-800 bg-slate-950 px-2.5 py-1 font-mono text-slate-300 hover:border-slate-700 hover:text-white transition-colors whitespace-nowrap shrink-0"
+                >
+                  google.com
+                </button>
+                <button
+                  type="button"
+                  (click)="runDomainSimulation('wikipedia.org')"
+                  class="rounded-md border border-slate-800 bg-slate-950 px-2.5 py-1 font-mono text-slate-300 hover:border-slate-700 hover:text-white transition-colors whitespace-nowrap shrink-0"
+                >
+                  wikipedia.org
+                </button>
+              </div>
+            </div>
+
+            <!-- Simulator Output Box -->
+            @if (safeguard.lastSimulatorResult(); as sim) {
+              <div class="border-t border-slate-800 pt-4 space-y-2 text-xs">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <div class="font-mono text-sm font-semibold">
+                    <span
+                      [class.text-rose-400]="!sim.allowed"
+                      [class.text-emerald-400]="sim.allowed"
+                    >
+                      {{ sim.allowed ? 'PERMITTED' : 'BLOCKED (SINKHOLED 0.0.0.0)' }}
+                    </span>
+                    <span aria-hidden="true" class="text-slate-500"> · </span>
+                    <span class="text-slate-100">{{ sim.normalizedDomain }}</span>
+                  </div>
+                  <span class="text-slate-400 font-mono">
+                    Rule: {{ sim.matchedRule }}
+                  </span>
+                </div>
+                <p class="text-slate-300 leading-relaxed">{{ sim.reason }}</p>
+                <p class="text-slate-400">
+                  Category: <span class="text-slate-200">{{ sim.matchedCategory }}</span>
+                  <span aria-hidden="true"> · </span>
+                  Active Layers: <span class="text-slate-200">{{ sim.enforcementLayers.join(' / ') }}</span>
+                </p>
+              </div>
+            } @else {
+              <div class="border-t border-slate-800 pt-4 text-xs text-slate-400">
+                Select a quick probe above or enter any domain and click <strong class="text-slate-200">Evaluate Domain Access</strong> to inspect the filter decision.
+              </div>
+            }
+          </div>
+
+          <!-- Right 5 Columns: Critical Product Decision (Model A vs Model B) -->
+          <div class="lg:col-span-5 rounded-xl border border-slate-800 bg-slate-900/60 p-6 flex flex-col justify-between space-y-5">
+            <div class="space-y-3">
+              <p class="text-xs font-medium text-sky-400">
+                Governance &amp; Tamper Resistance Model
+              </p>
+              <h2 class="text-lg font-semibold text-slate-100">
+                Active Protection Model
+              </h2>
+              <p class="text-xs text-slate-400 leading-relaxed">
+                True non-bypassable behavior requires separating routine device usage from policy unlock credentials. Choose the governance model that matches your deployment:
+              </p>
+
+              <!-- Single-elevation segmented switcher + hairline divider details -->
+              <div class="flex items-center gap-1 p-1 bg-slate-950 rounded-lg border border-slate-800 mt-3">
+                <button
+                  type="button"
+                  (click)="selectProtectionModel('model-a')"
+                  class="flex-1 px-3 py-2 text-xs font-semibold rounded-md transition-colors whitespace-nowrap shrink-0"
+                  [class.bg-sky-500]="safeguard.policy().protectionModel === 'model-a'"
+                  [class.text-slate-950]="safeguard.policy().protectionModel === 'model-a'"
+                  [class.text-slate-400]="safeguard.policy().protectionModel !== 'model-a'"
+                >
+                  Model A · Self-Control (Recommended)
+                </button>
+                <button
+                  type="button"
+                  (click)="selectProtectionModel('model-b')"
+                  class="flex-1 px-3 py-2 text-xs font-semibold rounded-md transition-colors whitespace-nowrap shrink-0"
+                  [class.bg-sky-500]="safeguard.policy().protectionModel === 'model-b'"
+                  [class.text-slate-950]="safeguard.policy().protectionModel === 'model-b'"
+                  [class.text-slate-400]="safeguard.policy().protectionModel !== 'model-b'"
+                >
+                  Model B · Admin MDM
+                </button>
+              </div>
+
+              <div class="divide-y divide-slate-800/80 pt-2 text-xs">
+                <div class="py-3 space-y-1">
+                  <div class="flex items-center justify-between font-medium text-slate-200">
+                    <span>Model A — Self-Control Protection</span>
+                    <span class="font-mono text-sky-400">{{ safeguard.policy().protectionModel === 'model-a' ? 'ACTIVE' : 'STANDBY' }}</span>
+                  </div>
+                  <p class="text-slate-400 leading-relaxed">
+                    Installed on your own devices. A trusted accountability partner holds the 6-digit unlock PIN, and any policy relaxation enforces a {{ safeguard.policy().cooldownMinutes }}-minute cooldown.
+                  </p>
+                </div>
+                <div class="py-3 space-y-1">
+                  <div class="flex items-center justify-between font-medium text-slate-200">
+                    <span>Model B — Administrator-Controlled MDM</span>
+                    <span class="font-mono text-sky-400">{{ safeguard.policy().protectionModel === 'model-b' ? 'ACTIVE' : 'STANDBY' }}</span>
+                  </div>
+                  <p class="text-slate-400 leading-relaxed">
+                    Managed by a parent, guardian, or IT administrator. Local user runs without OS admin privileges; Group Policy &amp; supervised mobile profiles prevent uninstallation.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="border-t border-slate-800 pt-4 flex items-center justify-between text-xs text-slate-400">
+              <span>Authorizer: <strong class="text-slate-200">{{ safeguard.policy().partnerName }}</strong></span>
+              <button
+                type="button"
+                (click)="setTab('tamper')"
+                class="text-sky-400 hover:text-sky-300 font-medium whitespace-nowrap shrink-0"
+              >
+                Configure Tamper Locks &rarr;
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- System Tamper & Content Defense Matrix + Recent Security Events -->
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <!-- Defense Matrix -->
+          <div class="lg:col-span-6 rounded-xl border border-slate-800 bg-slate-900/60 p-6 space-y-4">
+            <div class="flex items-center justify-between">
+              <h2 class="text-base font-semibold text-slate-100">
+                System-Level Tamper &amp; Content Controls
+              </h2>
+              <span class="text-xs text-slate-400">
+                PIN required to disable
+              </span>
+            </div>
+
+            <div class="divide-y divide-slate-800/80 text-sm">
+              <div class="py-3 flex items-center justify-between gap-4">
+                <div>
+                  <div class="font-medium text-slate-100">Adult &amp; Pornography Core Blocklist</div>
+                  <div class="text-xs text-slate-400">Blocks 142,800+ adult domains, tube portals, and .xxx/.adult TLDs</div>
+                </div>
+                <button
+                  type="button"
+                  (click)="handleTogglePolicyFlag('blockAdultCore', 'Adult & Pornography Core Blocklist')"
+                  class="px-3 py-1.5 rounded-lg text-xs font-semibold font-mono transition-colors whitespace-nowrap shrink-0"
+                  [class.bg-emerald-500/20]="safeguard.policy().blockAdultCore"
+                  [class.text-emerald-300]="safeguard.policy().blockAdultCore"
+                  [class.border]="true"
+                  [class.border-emerald-500/40]="safeguard.policy().blockAdultCore"
+                  [class.bg-slate-800]="!safeguard.policy().blockAdultCore"
+                  [class.text-slate-400]="!safeguard.policy().blockAdultCore"
+                  [class.border-slate-700]="!safeguard.policy().blockAdultCore"
+                >
+                  {{ safeguard.policy().blockAdultCore ? 'ENFORCED' : 'DISABLED' }}
+                </button>
+              </div>
+
+              <div class="py-3 flex items-center justify-between gap-4">
+                <div>
+                  <div class="font-medium text-slate-100">Hosts File NTFS ACL &amp; Hash Watchdog</div>
+                  <div class="text-xs text-slate-400">Locks C:\Windows\System32\drivers\etc\hosts against manual editing</div>
+                </div>
+                <button
+                  type="button"
+                  (click)="handleTogglePolicyFlag('lockHostsFile', 'Hosts File NTFS ACL & Hash Watchdog')"
+                  class="px-3 py-1.5 rounded-lg text-xs font-semibold font-mono transition-colors whitespace-nowrap shrink-0"
+                  [class.bg-emerald-500/20]="safeguard.policy().lockHostsFile"
+                  [class.text-emerald-300]="safeguard.policy().lockHostsFile"
+                  [class.border]="true"
+                  [class.border-emerald-500/40]="safeguard.policy().lockHostsFile"
+                  [class.bg-slate-800]="!safeguard.policy().lockHostsFile"
+                  [class.text-slate-400]="!safeguard.policy().lockHostsFile"
+                  [class.border-slate-700]="!safeguard.policy().lockHostsFile"
+                >
+                  {{ safeguard.policy().lockHostsFile ? 'LOCKED' : 'UNLOCKED' }}
+                </button>
+              </div>
+
+              <div class="py-3 flex items-center justify-between gap-4">
+                <div>
+                  <div class="font-medium text-slate-100">DNS Resolver &amp; Always-On VPN Lock</div>
+                  <div class="text-xs text-slate-400">Prevents disabling DNS filters on Windows Registry, Android VPN, and iOS DoH</div>
+                </div>
+                <button
+                  type="button"
+                  (click)="handleTogglePolicyFlag('lockDnsSettings', 'DNS Resolver & Always-On VPN Lock')"
+                  class="px-3 py-1.5 rounded-lg text-xs font-semibold font-mono transition-colors whitespace-nowrap shrink-0"
+                  [class.bg-emerald-500/20]="safeguard.policy().lockDnsSettings"
+                  [class.text-emerald-300]="safeguard.policy().lockDnsSettings"
+                  [class.border]="true"
+                  [class.border-emerald-500/40]="safeguard.policy().lockDnsSettings"
+                  [class.bg-slate-800]="!safeguard.policy().lockDnsSettings"
+                  [class.text-slate-400]="!safeguard.policy().lockDnsSettings"
+                  [class.border-slate-700]="!safeguard.policy().lockDnsSettings"
+                >
+                  {{ safeguard.policy().lockDnsSettings ? 'LOCKED' : 'UNLOCKED' }}
+                </button>
+              </div>
+
+              <div class="py-3 flex items-center justify-between gap-4">
+                <div>
+                  <div class="font-medium text-slate-100">Browser Extension Force-Install Policy</div>
+                  <div class="text-xs text-slate-400">Enforces Chrome/Edge ExtensionInstallForcelist &amp; disables Incognito bypass</div>
+                </div>
+                <button
+                  type="button"
+                  (click)="handleTogglePolicyFlag('forceBrowserExtension', 'Browser Extension Force-Install Policy')"
+                  class="px-3 py-1.5 rounded-lg text-xs font-semibold font-mono transition-colors whitespace-nowrap shrink-0"
+                  [class.bg-emerald-500/20]="safeguard.policy().forceBrowserExtension"
+                  [class.text-emerald-300]="safeguard.policy().forceBrowserExtension"
+                  [class.border]="true"
+                  [class.border-emerald-500/40]="safeguard.policy().forceBrowserExtension"
+                  [class.bg-slate-800]="!safeguard.policy().forceBrowserExtension"
+                  [class.text-slate-400]="!safeguard.policy().forceBrowserExtension"
+                  [class.border-slate-700]="!safeguard.policy().forceBrowserExtension"
+                >
+                  {{ safeguard.policy().forceBrowserExtension ? 'LOCKED' : 'UNLOCKED' }}
+                </button>
+              </div>
+
+              <div class="py-3 flex items-center justify-between gap-4">
+                <div>
+                  <div class="font-medium text-slate-100">Service Watchdog &amp; Uninstallation Protection</div>
+                  <div class="text-xs text-slate-400">Requires Partner/Admin authorization before stopping service or uninstalling</div>
+                </div>
+                <button
+                  type="button"
+                  (click)="handleTogglePolicyFlag('uninstallProtection', 'Service Watchdog & Uninstallation Protection')"
+                  class="px-3 py-1.5 rounded-lg text-xs font-semibold font-mono transition-colors whitespace-nowrap shrink-0"
+                  [class.bg-emerald-500/20]="safeguard.policy().uninstallProtection"
+                  [class.text-emerald-300]="safeguard.policy().uninstallProtection"
+                  [class.border]="true"
+                  [class.border-emerald-500/40]="safeguard.policy().uninstallProtection"
+                  [class.bg-slate-800]="!safeguard.policy().uninstallProtection"
+                  [class.text-slate-400]="!safeguard.policy().uninstallProtection"
+                  [class.border-slate-700]="!safeguard.policy().uninstallProtection"
+                >
+                  {{ safeguard.policy().uninstallProtection ? 'PROTECTED' : 'OFF' }}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Blocked & Tamper Events -->
+          <div class="lg:col-span-6 rounded-xl border border-slate-800 bg-slate-900/60 p-6 space-y-4">
+            <div class="flex items-center justify-between">
+              <h2 class="text-base font-semibold text-slate-100">
+                Recent Blocked Attempts &amp; Tamper Alerts
+              </h2>
+              <button
+                type="button"
+                (click)="setTab('tamper')"
+                class="text-xs text-sky-400 hover:text-sky-300 font-medium whitespace-nowrap shrink-0"
+              >
+                View Full Audit Ledger &rarr;
+              </button>
+            </div>
+
+            <div class="divide-y divide-slate-800/80 text-xs">
+              @for (log of safeguard.auditLogs().slice(0, 5); track log.id) {
+                <div class="py-3 space-y-1">
+                  <div class="flex items-center justify-between gap-2">
+                    <div class="font-medium text-slate-200">
+                      <span
+                        [class.text-rose-400]="log.severity === 'Critical'"
+                        [class.text-amber-400]="log.severity === 'Warning'"
+                        [class.text-emerald-400]="log.severity === 'Normal'"
+                      >
+                        {{ log.eventType }}
+                      </span>
+                      <span aria-hidden="true" class="text-slate-500"> · </span>
+                      <span class="font-mono text-slate-100">{{ log.target }}</span>
+                    </div>
+                    <span class="font-mono tabular-nums text-slate-400">{{ log.createdAt }}</span>
+                  </div>
+                  <p class="text-slate-400">
+                    {{ log.deviceName }} — {{ log.actionTaken }}
+                  </p>
+                </div>
+              }
+            </div>
+          </div>
+        </section>
+      </div>
+    }
+
+    <!-- TAB 2: BLOCKLISTS & CATEGORIES -->
+    @if (activeTab() === 'blocklists') {
+      <div class="space-y-8">
+        <!-- Category Toggles Row (Single-Elevation Cards) -->
+        <section class="space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+              <h2 class="text-lg font-semibold text-slate-100">
+                Managed Content Categories &amp; DNS Signatures
+              </h2>
+              <p class="text-xs text-slate-400 mt-0.5">
+                Synchronized across centralized DNS-over-HTTPS resolvers and local OS host sinkholes.
+              </p>
+            </div>
+            <span class="text-xs font-mono text-slate-400 tabular-nums">
+              Updated Daily · Zero-Bypass CNAME SafeSearch
+            </span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-5 flex flex-col justify-between gap-4">
+              <div>
+                <div class="text-sm font-semibold text-slate-100">Adult &amp; Pornography Core</div>
+                <p class="text-xs text-slate-400 mt-1">
+                  142,800+ adult video sites, imageboards, cam portals, and explicit TLDs (.xxx, .porn, .adult).
+                </p>
+              </div>
+              <div class="flex items-center justify-between pt-2 border-t border-slate-800/80">
+                <span class="text-xs font-mono text-slate-400">Status: {{ safeguard.policy().blockAdultCore ? 'Active' : 'Off' }}</span>
+                <button
+                  type="button"
+                  (click)="handleTogglePolicyFlag('blockAdultCore', 'Adult & Pornography Core')"
+                  class="px-3 py-1 rounded-md text-xs font-semibold font-mono border transition-colors whitespace-nowrap shrink-0"
+                  [class.border-emerald-500/40]="safeguard.policy().blockAdultCore"
+                  [class.bg-emerald-500/20]="safeguard.policy().blockAdultCore"
+                  [class.text-emerald-300]="safeguard.policy().blockAdultCore"
+                  [class.border-slate-700]="!safeguard.policy().blockAdultCore"
+                  [class.bg-slate-800]="!safeguard.policy().blockAdultCore"
+                  [class.text-slate-400]="!safeguard.policy().blockAdultCore"
+                >
+                  {{ safeguard.policy().blockAdultCore ? 'Enforced' : 'Enable' }}
+                </button>
+              </div>
+            </div>
+
+            <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-5 flex flex-col justify-between gap-4">
+              <div>
+                <div class="text-sm font-semibold text-slate-100">Proxy, VPN &amp; DoH Circumvention</div>
+                <p class="text-xs text-slate-400 mt-1">
+                  Blocks web proxies (CroxyProxy, Hide.me), unauthorized DoH resolvers, and browser translators used to bypass filters.
+                </p>
+              </div>
+              <div class="flex items-center justify-between pt-2 border-t border-slate-800/80">
+                <span class="text-xs font-mono text-slate-400">Status: {{ safeguard.policy().blockProxyVpn ? 'Active' : 'Off' }}</span>
+                <button
+                  type="button"
+                  (click)="handleTogglePolicyFlag('blockProxyVpn', 'Proxy, VPN & DoH Circumvention')"
+                  class="px-3 py-1 rounded-md text-xs font-semibold font-mono border transition-colors whitespace-nowrap shrink-0"
+                  [class.border-emerald-500/40]="safeguard.policy().blockProxyVpn"
+                  [class.bg-emerald-500/20]="safeguard.policy().blockProxyVpn"
+                  [class.text-emerald-300]="safeguard.policy().blockProxyVpn"
+                  [class.border-slate-700]="!safeguard.policy().blockProxyVpn"
+                  [class.bg-slate-800]="!safeguard.policy().blockProxyVpn"
+                  [class.text-slate-400]="!safeguard.policy().blockProxyVpn"
+                >
+                  {{ safeguard.policy().blockProxyVpn ? 'Enforced' : 'Enable' }}
+                </button>
+              </div>
+            </div>
+
+            <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-5 flex flex-col justify-between gap-4">
+              <div>
+                <div class="text-sm font-semibold text-slate-100">Strict SafeSearch &amp; Mixed Social</div>
+                <p class="text-xs text-slate-400 mt-1">
+                  Forces Google/Bing/DuckDuckGo SafeSearch VIP CNAMEs and blocks NSFW social subdomains (nsfw.reddit.com).
+                </p>
+              </div>
+              <div class="flex items-center justify-between pt-2 border-t border-slate-800/80">
+                <span class="text-xs font-mono text-slate-400">Status: {{ safeguard.policy().enforceSafeSearch ? 'Active' : 'Off' }}</span>
+                <button
+                  type="button"
+                  (click)="handleTogglePolicyFlag('enforceSafeSearch', 'Strict SafeSearch & Mixed Social')"
+                  class="px-3 py-1 rounded-md text-xs font-semibold font-mono border transition-colors whitespace-nowrap shrink-0"
+                  [class.border-emerald-500/40]="safeguard.policy().enforceSafeSearch"
+                  [class.bg-emerald-500/20]="safeguard.policy().enforceSafeSearch"
+                  [class.text-emerald-300]="safeguard.policy().enforceSafeSearch"
+                  [class.border-slate-700]="!safeguard.policy().enforceSafeSearch"
+                  [class.bg-slate-800]="!safeguard.policy().enforceSafeSearch"
+                  [class.text-slate-400]="!safeguard.policy().enforceSafeSearch"
+                >
+                  {{ safeguard.policy().enforceSafeSearch ? 'Enforced' : 'Enable' }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Custom Website Blocklist Builder & Table -->
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <!-- Add Custom Website Form -->
+          <div class="lg:col-span-4 rounded-xl border border-slate-800 bg-slate-900/60 p-6 space-y-4">
+            <h3 class="text-base font-semibold text-slate-100">
+              Add Custom Blocked Website
+            </h3>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              Add specific domains or subdomains to sinkhole across all registered Windows, Android, and iOS devices.
+            </p>
+
+            <form (ngSubmit)="submitNewBlockRule()" class="space-y-4 pt-1">
+              <div>
+                <label for="new-rule-domain" class="block text-xs font-medium text-slate-300 mb-1.5">
+                  Domain or URL to Block
+                </label>
+                <input
+                  id="new-rule-domain"
+                  name="newRuleDomain"
+                  type="text"
+                  [(ngModel)]="newRuleDomain"
+                  placeholder="e.g. distraction-site.com"
+                  class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3.5 py-2 text-sm font-mono text-slate-100 placeholder-slate-500 focus:border-sky-500 focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label for="new-rule-category" class="block text-xs font-medium text-slate-300 mb-1.5">
+                  Classification Category
+                </label>
+                <select
+                  id="new-rule-category"
+                  name="newRuleCategory"
+                  [(ngModel)]="newRuleCategory"
+                  class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3.5 py-2 text-sm text-slate-100 focus:border-sky-500 focus:outline-none"
+                >
+                  <option value="Custom">Custom Website / Habit Trigger</option>
+                  <option value="Adult">Adult / Explicit Portal</option>
+                  <option value="Proxy/Bypass">Proxy / VPN Circumvention</option>
+                  <option value="Social/Trigger">Social Media / Mixed Content</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="new-rule-notes" class="block text-xs font-medium text-slate-300 mb-1.5">
+                  Policy Note (Optional)
+                </label>
+                <input
+                  id="new-rule-notes"
+                  name="newRuleNotes"
+                  type="text"
+                  [(ngModel)]="newRuleNotes"
+                  placeholder="Reason or accountability note"
+                  class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3.5 py-2 text-sm text-slate-100 placeholder-slate-500 focus:border-sky-500 focus:outline-none"
+                />
+              </div>
+
+              <div class="flex items-center gap-2.5 pt-1">
+                <input
+                  id="new-rule-strict"
+                  name="newRuleStrictLock"
+                  type="checkbox"
+                  [(ngModel)]="newRuleStrictLock"
+                  class="h-4 w-4 rounded border-slate-700 bg-slate-950 text-sky-500 focus:ring-sky-500"
+                />
+                <label for="new-rule-strict" class="text-xs text-slate-300">
+                  Lock rule against casual deletion (requires Partner/Admin PIN)
+                </label>
+              </div>
+
+              @if (ruleFeedback()) {
+                <p
+                  class="text-xs font-medium"
+                  [class.text-rose-400]="ruleError()"
+                  [class.text-emerald-400]="!ruleError()"
+                >
+                  {{ ruleFeedback() }}
+                </p>
+              }
+
+              <button
+                type="submit"
+                class="w-full rounded-lg bg-sky-500 px-4 py-2.5 text-xs font-semibold text-slate-950 hover:bg-sky-400 transition-colors whitespace-nowrap shrink-0"
+              >
+                Add Domain to Blocklist
+              </button>
+            </form>
+          </div>
+
+          <!-- Custom Blocklist Table -->
+          <div class="lg:col-span-8 rounded-xl border border-slate-800 bg-slate-900/60 overflow-hidden">
+            <div class="p-5 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h3 class="text-base font-semibold text-slate-100">
+                  Enforced Domain Blocklist ({{ filteredBlockRules().length }})
+                </h3>
+                <p class="text-xs text-slate-400 mt-0.5">
+                  Strict-locked domains require Partner/Admin authorization before removal.
+                </p>
+              </div>
+
+              <div class="flex flex-wrap items-center gap-2">
+                <label for="rule-search-input" class="sr-only">Search blocked domains</label>
+                <input
+                  id="rule-search-input"
+                  type="text"
+                  [ngModel]="ruleSearchQuery()"
+                  (ngModelChange)="ruleSearchQuery.set($event)"
+                  placeholder="Filter domains..."
+                  class="rounded-lg border border-slate-700 bg-slate-950 px-3 py-1.5 text-xs font-mono text-slate-100 placeholder-slate-500 focus:border-sky-500 focus:outline-none"
+                />
+
+                <div class="flex items-center gap-1 p-1 bg-slate-950 rounded-lg border border-slate-800">
+                  @for (cat of ['ALL', 'Adult', 'Proxy/Bypass', 'Social/Trigger', 'Custom']; track cat) {
+                    <button
+                      type="button"
+                      (click)="ruleCategoryFilter.set(cat)"
+                      class="px-2.5 py-1 text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0"
+                      [class.bg-slate-800]="ruleCategoryFilter() === cat"
+                      [class.text-slate-100]="ruleCategoryFilter() === cat"
+                      [class.text-slate-400]="ruleCategoryFilter() !== cat"
+                    >
+                      {{ cat === 'ALL' ? 'All' : cat }}
+                    </button>
+                  }
+                </div>
+              </div>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="border-b border-slate-800/80 text-xs text-slate-400">
+                    <th class="py-3 px-4 font-medium">Blocked Domain</th>
+                    <th class="py-3 px-4 font-medium">Category &amp; Protection</th>
+                    <th class="py-3 px-4 font-medium text-right">Intercepted Hits</th>
+                    <th class="py-3 px-4 font-medium text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800/60 text-sm">
+                  @for (rule of filteredBlockRules(); track rule.id) {
+                    <tr class="hover:bg-slate-800/30 transition-colors">
+                      <td class="py-3 px-4">
+                        <div class="font-mono font-medium text-slate-100">{{ rule.domain }}</div>
+                        <div class="text-xs text-slate-400">{{ rule.notes }}</div>
+                      </td>
+                      <td class="py-3 px-4 text-xs text-slate-300">
+                        <span>{{ rule.category }}</span>
+                        <span aria-hidden="true"> · </span>
+                        <span [class.text-amber-300]="rule.strictLock" [class.text-slate-400]="!rule.strictLock">
+                          {{ rule.strictLock ? 'PIN Tamper-Locked' : 'Standard Rule' }}
+                        </span>
+                      </td>
+                      <td class="py-3 px-4 text-right font-mono tabular-nums text-xs text-slate-200">
+                        {{ rule.hitCount }}
+                      </td>
+                      <td class="py-3 px-4 text-right">
+                        <button
+                          type="button"
+                          (click)="handleRemoveBlockRule(rule)"
+                          [attr.aria-label]="'Remove ' + rule.domain"
+                          class="rounded-md border border-slate-700 bg-slate-900 px-2.5 py-1 text-xs font-medium text-slate-300 hover:border-rose-500/50 hover:text-rose-300 transition-colors whitespace-nowrap shrink-0"
+                        >
+                          {{ rule.strictLock && !safeguard.sessionAuthorized() ? 'Unlock to Remove' : 'Remove' }}
+                        </button>
+                      </td>
+                    </tr>
+                  } @empty {
+                    <tr>
+                      <td colspan="4" class="py-8 px-4 text-center text-xs text-slate-400">
+                        No domains match the current filter. Add a custom website on the left or clear your search filter.
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </div>
+    }
+
+    <!-- TAB 3: SCHEDULES & LOCKOUT WINDOWS -->
+    @if (activeTab() === 'schedules') {
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <!-- Create Schedule Form -->
+        <div class="lg:col-span-5 rounded-xl border border-slate-800 bg-slate-900/60 p-6 space-y-4">
+          <p class="text-xs font-medium text-sky-400">
+            Time-Based Commitment Windows
+          </p>
+          <h2 class="text-lg font-semibold text-slate-100">
+            Create Recurring Blocking Schedule
+          </h2>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Configure high-risk hours (such as late-night recovery windows or deep-work blocks). Schedules set to <strong class="text-slate-200">Hard Commitment Lock</strong> cannot be disabled during active hours without Partner/Admin authorization.
+          </p>
+
+          <form (ngSubmit)="submitNewSchedule()" class="space-y-4 pt-2">
+            <div>
+              <label for="sched-name-input" class="block text-xs font-medium text-slate-300 mb-1.5">
+                Schedule Label
+              </label>
+              <input
+                id="sched-name-input"
+                name="newScheduleName"
+                type="text"
+                [(ngModel)]="newScheduleName"
+                placeholder="e.g. Late Night Bedroom Curfew"
+                class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3.5 py-2 text-sm text-slate-100 placeholder-slate-500 focus:border-sky-500 focus:outline-none"
+              />
+            </div>
+
+            <div>
+              <label for="sched-days-input" class="block text-xs font-medium text-slate-300 mb-1.5">
+                Recurring Days
+              </label>
+              <input
+                id="sched-days-input"
+                name="newScheduleDays"
+                type="text"
+                [(ngModel)]="newScheduleDays"
+                placeholder="Mon,Tue,Wed,Thu,Fri,Sat,Sun"
+                class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3.5 py-2 text-sm font-mono text-slate-100 placeholder-slate-500 focus:border-sky-500 focus:outline-none"
+              />
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label for="sched-start-input" class="block text-xs font-medium text-slate-300 mb-1.5">
+                  Start Time (24h)
+                </label>
+                <input
+                  id="sched-start-input"
+                  name="newScheduleStart"
+                  type="text"
+                  [(ngModel)]="newScheduleStart"
+                  placeholder="22:00"
+                  class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3.5 py-2 text-sm font-mono tabular-nums text-slate-100 focus:border-sky-500 focus:outline-none"
+                />
+              </div>
+              <div>
+                <label for="sched-end-input" class="block text-xs font-medium text-slate-300 mb-1.5">
+                  End Time (24h)
+                </label>
+                <input
+                  id="sched-end-input"
+                  name="newScheduleEnd"
+                  type="text"
+                  [(ngModel)]="newScheduleEnd"
+                  placeholder="07:00"
+                  class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3.5 py-2 text-sm font-mono tabular-nums text-slate-100 focus:border-sky-500 focus:outline-none"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label for="sched-strictness-select" class="block text-xs font-medium text-slate-300 mb-1.5">
+                Lockout Strictness Tier
+              </label>
+              <select
+                id="sched-strictness-select"
+                name="newScheduleStrictness"
+                [(ngModel)]="newScheduleStrictness"
+                class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3.5 py-2 text-sm text-slate-100 focus:border-sky-500 focus:outline-none"
+              >
+                <option value="Hard Commitment Lock">Hard Commitment Lock (Requires Partner PIN to Pause)</option>
+                <option value="Standard Filter">Standard Filter (Blocks Adult + Custom Domains)</option>
+              </select>
+            </div>
+
+            @if (scheduleFeedback()) {
+              <p
+                class="text-xs font-medium"
+                [class.text-rose-400]="scheduleError()"
+                [class.text-emerald-400]="!scheduleError()"
+              >
+                {{ scheduleFeedback() }}
+              </p>
+            }
+
+            <button
+              type="submit"
+              class="w-full rounded-lg bg-sky-500 px-4 py-2.5 text-xs font-semibold text-slate-950 hover:bg-sky-400 transition-colors whitespace-nowrap shrink-0"
+            >
+              Save &amp; Enforce Schedule Window
+            </button>
+          </form>
+        </div>
+
+        <!-- Active Schedules List -->
+        <div class="lg:col-span-7 rounded-xl border border-slate-800 bg-slate-900/60 overflow-hidden">
+          <div class="p-5 border-b border-slate-800 flex items-center justify-between">
+            <div>
+              <h3 class="text-base font-semibold text-slate-100">
+                Configured Blocking Schedules ({{ safeguard.schedules().length }})
+              </h3>
+              <p class="text-xs text-slate-400 mt-0.5">
+                Enforced locally by the Windows Service, Android VPN daemon, and iOS profile regardless of timezone tampering.
+              </p>
+            </div>
+          </div>
+
+          <div class="divide-y divide-slate-800/80">
+            @for (sched of safeguard.schedules(); track sched.id) {
+              <div class="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-slate-800/20 transition-colors">
+                <div class="space-y-1">
+                  <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-sm font-semibold text-slate-100">{{ sched.name }}</span>
+                    <span aria-hidden="true" class="text-slate-600">·</span>
+                    <span
+                      class="text-xs font-medium"
+                      [class.text-amber-300]="sched.strictness === 'Hard Commitment Lock'"
+                      [class.text-slate-400]="sched.strictness !== 'Hard Commitment Lock'"
+                    >
+                      {{ sched.strictness }}
+                    </span>
+                  </div>
+                  <div class="text-xs text-slate-400 font-mono tabular-nums">
+                    Window: <strong class="text-slate-200">{{ sched.startTime }} &ndash; {{ sched.endTime }}</strong>
+                    <span aria-hidden="true"> · </span>
+                    Days: {{ sched.days }}
+                  </div>
+                </div>
+
+                <div class="flex items-center gap-3">
+                  <span
+                    class="text-xs font-mono"
+                    [class.text-emerald-400]="sched.enabled"
+                    [class.text-slate-500]="!sched.enabled"
+                  >
+                    {{ sched.enabled ? 'ACTIVE' : 'PAUSED' }}
+                  </span>
+                  <button
+                    type="button"
+                    (click)="handleToggleSchedule(sched)"
+                    [attr.aria-label]="(sched.enabled ? 'Pause ' : 'Enable ') + sched.name"
+                    class="rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-xs font-medium text-slate-200 hover:bg-slate-800 transition-colors whitespace-nowrap shrink-0"
+                  >
+                    {{ sched.enabled ? (sched.strictness === 'Hard Commitment Lock' && !safeguard.sessionAuthorized() ? 'PIN Required to Pause' : 'Pause Window') : 'Enable Window' }}
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- TAB 4: NATIVE AGENTS -->
+    @if (activeTab() === 'agents') {
+      <app-native-agents-view />
+    }
+
+    <!-- TAB 5: TAMPER GUARD & AUDIT LEDGER -->
+    @if (activeTab() === 'tamper') {
+      <div class="space-y-8">
+        <!-- Accountability Partner & Protection Model Configuration -->
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <div class="lg:col-span-5 rounded-xl border border-slate-800 bg-slate-900/60 p-6 space-y-4">
+            <p class="text-xs font-medium text-sky-400">
+              Authorization &amp; Recovery Credentials
+            </p>
+            <h2 class="text-lg font-semibold text-slate-100">
+              Accountability Partner &amp; Cooldown Lock
+            </h2>
+            <p class="text-xs text-slate-400 leading-relaxed">
+              Configure who holds the authorization PIN required to unlock hosts/DNS settings, remove strict-locked domains, or uninstall the native service.
+            </p>
+
+            <form (ngSubmit)="saveAccountabilitySettings()" class="space-y-4 pt-1">
+              <div>
+                <label for="partner-name-field" class="block text-xs font-medium text-slate-300 mb-1.5">
+                  Trusted Partner or Administrator Name
+                </label>
+                <input
+                  id="partner-name-field"
+                  name="partnerNameInput"
+                  type="text"
+                  [(ngModel)]="partnerNameInput"
+                  class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3.5 py-2 text-sm text-slate-100 focus:border-sky-500 focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label for="partner-email-field" class="block text-xs font-medium text-slate-300 mb-1.5">
+                  Verification &amp; Alert Email
+                </label>
+                <input
+                  id="partner-email-field"
+                  name="partnerEmailInput"
+                  type="email"
+                  [(ngModel)]="partnerEmailInput"
+                  class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3.5 py-2 text-sm font-mono text-slate-100 focus:border-sky-500 focus:outline-none"
+                />
+              </div>
+
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <label for="cooldown-minutes-field" class="block text-xs font-medium text-slate-300 mb-1.5">
+                    Cooldown Delay (Minutes)
+                  </label>
+                  <input
+                    id="cooldown-minutes-field"
+                    name="cooldownMinutesInput"
+                    type="number"
+                    [(ngModel)]="cooldownMinutesInput"
+                    class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3.5 py-2 text-sm font-mono tabular-nums text-slate-100 focus:border-sky-500 focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label for="unlock-pin-field" class="block text-xs font-medium text-slate-300 mb-1.5">
+                    Authorization PIN
+                  </label>
+                  <input
+                    id="unlock-pin-field"
+                    name="newPinInput"
+                    type="text"
+                    [(ngModel)]="newPinInput"
+                    class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3.5 py-2 text-sm font-mono tabular-nums text-slate-100 focus:border-sky-500 focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              @if (policyFeedback()) {
+                <p class="text-xs font-medium text-emerald-400">
+                  {{ policyFeedback() }}
+                </p>
+              }
+
+              <button
+                type="submit"
+                class="w-full rounded-lg bg-sky-500 px-4 py-2.5 text-xs font-semibold text-slate-950 hover:bg-sky-400 transition-colors whitespace-nowrap shrink-0"
+              >
+                {{ safeguard.sessionAuthorized() ? 'Save Accountability Configuration' : 'Verify PIN & Save Accountability Config' }}
+              </button>
+            </form>
+          </div>
+
+          <!-- Immutable Security & Tamper Audit Ledger -->
+          <div class="lg:col-span-7 rounded-xl border border-slate-800 bg-slate-900/60 overflow-hidden">
+            <div class="p-5 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h3 class="text-base font-semibold text-slate-100">
+                  Immutable Security &amp; Tamper Audit Ledger ({{ filteredAuditLogs().length }})
+                </h3>
+                <p class="text-xs text-slate-400 mt-0.5">
+                  Append-only record of blocked adult/proxy requests, hosts/DNS tamper attempts, and policy changes.
+                </p>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <button
+                  type="button"
+                  (click)="exportAuditLogsCsv()"
+                  class="rounded-lg border border-slate-700 bg-slate-800/80 px-3 py-1.5 text-xs font-medium text-slate-200 hover:bg-slate-800 transition-colors whitespace-nowrap shrink-0"
+                >
+                  Download CSV
+                </button>
+              </div>
+            </div>
+
+            <div class="px-5 py-3 border-b border-slate-800/80 flex flex-wrap items-center justify-between gap-3 bg-slate-950/40">
+              <div class="flex items-center gap-1 p-1 bg-slate-950 rounded-lg border border-slate-800">
+                @for (evt of ['ALL', 'Blocked Request', 'Tamper Attempt', 'Policy Change']; track evt) {
+                  <button
+                    type="button"
+                    (click)="auditFilterType.set(evt)"
+                    class="px-2.5 py-1 text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0"
+                    [class.bg-slate-800]="auditFilterType() === evt"
+                    [class.text-slate-100]="auditFilterType() === evt"
+                    [class.text-slate-400]="auditFilterType() !== evt"
+                  >
+                    {{ evt === 'ALL' ? 'All Events' : evt }}
+                  </button>
+                }
+              </div>
+
+              <div class="flex-1 min-w-[180px] max-w-xs">
+                <label for="audit-search-input" class="sr-only">Search audit logs</label>
+                <input
+                  id="audit-search-input"
+                  type="text"
+                  [ngModel]="auditSearchQuery()"
+                  (ngModelChange)="auditSearchQuery.set($event)"
+                  placeholder="Search target or device..."
+                  class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-1.5 text-xs font-mono text-slate-100 placeholder-slate-500 focus:border-sky-500 focus:outline-none"
+                />
+              </div>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="border-b border-slate-800/80 text-xs text-slate-400">
+                    <th class="py-3 px-4 font-medium">Timestamp</th>
+                    <th class="py-3 px-4 font-medium">Event &amp; Target</th>
+                    <th class="py-3 px-4 font-medium">Endpoint</th>
+                    <th class="py-3 px-4 font-medium">Enforcement Action</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-800/60 text-xs">
+                  @for (log of filteredAuditLogs(); track log.id) {
+                    <tr class="hover:bg-slate-800/30 transition-colors">
+                      <td class="py-3 px-4 font-mono tabular-nums text-slate-400 whitespace-nowrap">
+                        {{ log.createdAt }}
+                      </td>
+                      <td class="py-3 px-4">
+                        <div
+                          class="font-semibold"
+                          [class.text-rose-400]="log.severity === 'Critical'"
+                          [class.text-amber-400]="log.severity === 'Warning'"
+                          [class.text-emerald-400]="log.severity === 'Normal'"
+                        >
+                          {{ log.eventType }}
+                        </div>
+                        <div class="font-mono text-slate-200">{{ log.target }}</div>
+                      </td>
+                      <td class="py-3 px-4 text-slate-300 whitespace-nowrap">
+                        {{ log.deviceName }}
+                      </td>
+                      <td class="py-3 px-4 text-slate-400">
+                        {{ log.actionTaken }}
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </div>
+    }
+  </main>
+
+  <!-- Quiet Footer -->
+  <footer class="border-t border-slate-900 px-6 py-5 text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div>
+        SafeGuard Pro — Tamper-Resistant Content &amp; Habit Blocking Architecture (Windows Service · Android VpnService · iOS NetworkExtension)
+      </div>
+      <div>
+        Engineered for verifiable tamper resistance · Model A Self-Control &amp; Model B MDM Governance
+      </div>
+    </div>
+  </footer>
+
+  <!-- Partner / Admin PIN Authorization Modal -->
+  <app-pin-modal
+    [open]="pinModalOpen()"
+    [actionDescription]="pinModalDescription()"
+    (closed)="pinModalOpen.set(false)"
+    (unlocked)="onPinUnlocked()"
+  />
+</div>

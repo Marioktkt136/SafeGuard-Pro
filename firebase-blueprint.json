@@ -1,0 +1,367 @@
+{
+  "entities": {
+    "PolicyConfig": {
+      "title": "PolicyConfig",
+      "description": "User protection model, content category filters, accountability lock settings, and system tamper defense flags.",
+      "type": "object",
+      "properties": {
+        "ownerId": {
+          "type": "string",
+          "description": "Firebase Auth UID of the policy owner.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "protectionModel": {
+          "type": "string",
+          "description": "Active security governance model.",
+          "enum": ["model-a", "model-b"]
+        },
+        "partnerName": {
+          "type": "string",
+          "description": "Trusted accountability partner or administrator display name.",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "partnerEmail": {
+          "type": "string",
+          "description": "Accountability partner or admin verification email.",
+          "minLength": 3,
+          "maxLength": 120
+        },
+        "unlockPin": {
+          "type": "string",
+          "description": "6-digit authorization PIN controlled by the trusted partner or admin.",
+          "minLength": 4,
+          "maxLength": 16,
+          "pattern": "^[0-9A-Za-z\\-]+$"
+        },
+        "cooldownMinutes": {
+          "type": "number",
+          "description": "Mandatory time-delay cooldown in minutes before non-PIN policy relaxation."
+        },
+        "blockAdultCore": {
+          "type": "boolean",
+          "description": "Blocks known adult and pornography domains at DNS and hosts layers."
+        },
+        "blockProxyVpn": {
+          "type": "boolean",
+          "description": "Blocks known web proxies, DoH bypass resolvers, and unauthorized VPN endpoints."
+        },
+        "enforceSafeSearch": {
+          "type": "boolean",
+          "description": "Forces CNAME/VIP SafeSearch on Google, Bing, DuckDuckGo, and YouTube."
+        },
+        "blockMixedSocial": {
+          "type": "boolean",
+          "description": "Restricts NSFW subreddits and adult-tagged media portals."
+        },
+        "blockGambling": {
+          "type": "boolean",
+          "description": "Blocks online casinos and betting platforms."
+        },
+        "lockHostsFile": {
+          "type": "boolean",
+          "description": "Enforces read-only ACL and watchdog hash verification on system hosts file."
+        },
+        "lockDnsSettings": {
+          "type": "boolean",
+          "description": "Locks network adapter DNS and OS MDM DNS-over-HTTPS policy."
+        },
+        "forceBrowserExtension": {
+          "type": "boolean",
+          "description": "Applies Registry/MDM ExtensionInstallForcelist policy."
+        },
+        "uninstallProtection": {
+          "type": "boolean",
+          "description": "Requires partner/admin authorization code before stopping service or uninstalling."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of the last policy modification."
+        }
+      },
+      "required": [
+        "ownerId",
+        "protectionModel",
+        "partnerName",
+        "partnerEmail",
+        "unlockPin",
+        "cooldownMinutes",
+        "blockAdultCore",
+        "blockProxyVpn",
+        "enforceSafeSearch",
+        "blockMixedSocial",
+        "blockGambling",
+        "lockHostsFile",
+        "lockDnsSettings",
+        "forceBrowserExtension",
+        "uninstallProtection",
+        "updatedAt"
+      ]
+    },
+    "BlockRule": {
+      "title": "BlockRule",
+      "description": "Custom domain or URL pattern added to the user's blocklist.",
+      "type": "object",
+      "properties": {
+        "ownerId": {
+          "type": "string",
+          "description": "Firebase Auth UID of the rule owner.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "domain": {
+          "type": "string",
+          "description": "Normalized domain or hostname to block.",
+          "minLength": 3,
+          "maxLength": 253,
+          "pattern": "^[a-z0-9.-]+\\.[a-z]{2,}$"
+        },
+        "category": {
+          "type": "string",
+          "description": "Classification of the blocked domain.",
+          "enum": ["Adult", "Proxy/Bypass", "Social/Trigger", "Custom"]
+        },
+        "strictLock": {
+          "type": "boolean",
+          "description": "Whether removing this rule requires partner/admin authorization."
+        },
+        "notes": {
+          "type": "string",
+          "description": "Optional reason or note for blocking.",
+          "minLength": 0,
+          "maxLength": 200
+        },
+        "hitCount": {
+          "type": "number",
+          "description": "Number of intercepted connection attempts to this domain."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when rule was created."
+        }
+      },
+      "required": [
+        "ownerId",
+        "domain",
+        "category",
+        "strictLock",
+        "notes",
+        "hitCount",
+        "createdAt"
+      ]
+    },
+    "ScheduleWindow": {
+      "title": "ScheduleWindow",
+      "description": "Recurring time window during which strict blocking or total lockout is enforced.",
+      "type": "object",
+      "properties": {
+        "ownerId": {
+          "type": "string",
+          "description": "Firebase Auth UID of the schedule owner.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "name": {
+          "type": "string",
+          "description": "Human-readable schedule title.",
+          "minLength": 2,
+          "maxLength": 80
+        },
+        "days": {
+          "type": "string",
+          "description": "Comma-separated active days (e.g., Mon,Tue,Wed,Thu,Fri,Sat,Sun).",
+          "minLength": 3,
+          "maxLength": 40
+        },
+        "startTime": {
+          "type": "string",
+          "description": "24-hour start time in HH:MM format.",
+          "minLength": 5,
+          "maxLength": 5,
+          "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+        },
+        "endTime": {
+          "type": "string",
+          "description": "24-hour end time in HH:MM format.",
+          "minLength": 5,
+          "maxLength": 5,
+          "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+        },
+        "strictness": {
+          "type": "string",
+          "description": "Enforcement tier during active window.",
+          "enum": ["Standard Filter", "Hard Commitment Lock"]
+        },
+        "enabled": {
+          "type": "boolean",
+          "description": "Whether this schedule is currently active."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when schedule was created."
+        }
+      },
+      "required": [
+        "ownerId",
+        "name",
+        "days",
+        "startTime",
+        "endTime",
+        "strictness",
+        "enabled",
+        "createdAt"
+      ]
+    },
+    "ProtectedDevice": {
+      "title": "ProtectedDevice",
+      "description": "Enrolled Windows, Android, or iOS device running a native SafeGuard enforcement component.",
+      "type": "object",
+      "properties": {
+        "ownerId": {
+          "type": "string",
+          "description": "Firebase Auth UID of the device owner.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "name": {
+          "type": "string",
+          "description": "Device hostname or label.",
+          "minLength": 2,
+          "maxLength": 80
+        },
+        "platform": {
+          "type": "string",
+          "description": "Operating system platform.",
+          "enum": ["Windows", "Android", "iOS"]
+        },
+        "agentType": {
+          "type": "string",
+          "description": "Native protection daemon architecture.",
+          "minLength": 2,
+          "maxLength": 80
+        },
+        "agentVersion": {
+          "type": "string",
+          "description": "Installed native agent version string.",
+          "minLength": 3,
+          "maxLength": 24
+        },
+        "status": {
+          "type": "string",
+          "description": "Operational health and tamper status.",
+          "enum": ["Protected", "Tamper Alert", "Sync Pending"]
+        },
+        "dnsLockActive": {
+          "type": "boolean",
+          "description": "Whether OS-level DNS resolver lock is active."
+        },
+        "hostsLockActive": {
+          "type": "boolean",
+          "description": "Whether system hosts file or local VPN sinkhole is locked."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when device was registered."
+        }
+      },
+      "required": [
+        "ownerId",
+        "name",
+        "platform",
+        "agentType",
+        "agentVersion",
+        "status",
+        "dnsLockActive",
+        "hostsLockActive",
+        "createdAt"
+      ]
+    },
+    "AuditEvent": {
+      "title": "AuditEvent",
+      "description": "Immutable audit record of blocked domain requests, tamper alerts, and policy updates.",
+      "type": "object",
+      "properties": {
+        "ownerId": {
+          "type": "string",
+          "description": "Firebase Auth UID of the account owner.",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "eventType": {
+          "type": "string",
+          "description": "Category of security event.",
+          "enum": ["Blocked Request", "Tamper Attempt", "Policy Change", "Service Heartbeat"]
+        },
+        "severity": {
+          "type": "string",
+          "description": "Security severity level.",
+          "enum": ["Normal", "Warning", "Critical"]
+        },
+        "target": {
+          "type": "string",
+          "description": "Blocked domain, registry path, or policy target.",
+          "minLength": 1,
+          "maxLength": 253
+        },
+        "deviceName": {
+          "type": "string",
+          "description": "Endpoint that reported the event.",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "actionTaken": {
+          "type": "string",
+          "description": "Enforcement action executed by the agent.",
+          "minLength": 2,
+          "maxLength": 160
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when event occurred."
+        }
+      },
+      "required": [
+        "ownerId",
+        "eventType",
+        "severity",
+        "target",
+        "deviceName",
+        "actionTaken",
+        "createdAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/policies/{userId}": {
+      "schema": { "$ref": "#/entities/PolicyConfig" },
+      "description": "Per-user tamper-resistant protection policy, category switches, and accountability partner configuration."
+    },
+    "/blockRules/{ruleId}": {
+      "schema": { "$ref": "#/entities/BlockRule" },
+      "description": "User-defined custom website blocklist rules."
+    },
+    "/schedules/{scheduleId}": {
+      "schema": { "$ref": "#/entities/ScheduleWindow" },
+      "description": "Recurring blocking schedules and commitment lockout windows."
+    },
+    "/devices/{deviceId}": {
+      "schema": { "$ref": "#/entities/ProtectedDevice" },
+      "description": "Registered Windows, Android, and iOS endpoints running native protection services."
+    },
+    "/auditLogs/{logId}": {
+      "schema": { "$ref": "#/entities/AuditEvent" },
+      "description": "Immutable security ledger of blocked requests, tamper defenses, and authorization events."
+    }
+  }
+}

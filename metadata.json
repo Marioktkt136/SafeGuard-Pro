@@ -1,0 +1,6 @@
+{
+  "name": "SafeGuard Pro",
+  "description": "Cross-platform adult content and custom website blocking management console with tamper-resistant system policies, scheduled lockouts, accountability partner locks, and native Windows, Android, and iOS enforcement architectures.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
